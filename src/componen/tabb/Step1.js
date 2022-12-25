@@ -3,7 +3,8 @@ import {Row, Col, Form } from "react-bootstrap";
 
 const Step1=()=>{
     let datee=new Date();
-    let playDate=datee.getDate()+'-'+datee.getMonth()+'-'+datee.getFullYear();
+    let mont=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    let playDate=datee.getDate()+'-'+mont[datee.getMonth()]+'-'+datee.getFullYear();
     return(
         <div >
             <Form>
