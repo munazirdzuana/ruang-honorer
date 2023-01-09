@@ -1,58 +1,100 @@
-import React, { useState } from "react";
-import { Button, Card, Container, Tab, Tabs } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Card, Container, Button, Modal } from "react-bootstrap";
 import Draggable from "react-draggable";
 import Webcam from "react-webcam";
 import NavigationBar from "../componen/Navbarr/NavigationBar";
-import Step1 from "../componen/tabb/Step1";
 import Step2 from "../componen/tabb/Step2";
-import aki from"../asset/aki.jpg"
+import aki from "../asset/aki.jpg"
 
-const Main = () =>{
-    const [key, setKey] = useState('1');
-    const [dissa, setDissa] =useState(false);
-    const [kem,setKem]=useState(false)
+const Main = () => {
+    const [timeOn, setTimeOn] = React.useState(false);
+    const [time, setTime] = React.useState(0);
+    const [show, setShow] = React.useState(false);
+  const [mod, setMod] = React.useState(true);
 
-    const callback = (e)=>{
-        setKem(e)
-    }
+  const mulai = <>
+  <Modal.Header closeButton>
+    <Modal.Title>Mulai ?</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    Pastikan semuanya sudah siap.
+  </Modal.Body>
+</>
 
-    const err=()=>{
+const akhir = <>
+  <Modal.Header closeButton>
+    <Modal.Title>akhiri?</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    Akhiri pembelajaran sekarang
+  </Modal.Body>
+</>
+
+    useEffect(() => {
+        let interval = null;
+
+        if (timeOn) {
+            interval = setInterval(() => {
+                setTime((prevTime) => prevTime + 10);
+            }, 10);
+        } else if (!timeOn) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [timeOn]);
+
+    const err = () => {
         alert("hidupkan kamera")
         window.location.reload();
     }
 
-    //   const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
     return (
         <div className="bgp">
-            <NavigationBar page="Main"/>
-            
+            <NavigationBar page="Main" />
             <Container className="mt-4 pt-5">
                 <Card>
-                <Card.Img variant="top" src={aki} />
-                <Card.Body >
-                    <Tabs 
-                    id="controlled-tab-example"
-                    activeKey={key}
-                    onSelect={(k) => setKey(k)}
-                    
-                    >
-                        <Tab eventKey="1" title="STEP 1" disabled={dissa}>
-                            <Step1/>
-                            <Button onClick={()=>{setKey('2'); setDissa(true)}}>Lanjut</Button>
-                        </Tab>
-                        <Tab eventKey="2" title="STEP 2" disabled>
-                            <Step2 callback={callback}/>
-                            <Button disabled={kem} className="mt-2" onClick={()=>{setKey('1'); setDissa(true)}}>Kembali</Button>
-                        </Tab>
-                </Tabs>
-                </Card.Body>
+                    <Card.Img variant="top" src={aki} />
+                    <Card.Body >
+                        <div className="Timers">
+                            <h1>Waktunya Mengajar</h1>
+                            <div id="display" className="badge bg-danger text-wrap fs-3">
+                                <span >{("0" + Math.floor((time / 60000) % 60)).slice(-2)}:</span>
+                                <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}:</span>
+                                <span>{("0" + ((time / 10) % 100)).slice(-2)}</span>
+                            </div>
+                            <div>
+                                {!timeOn && time === 0 && (
+                                    <Button onClick={() => { setShow(!show); setMod(true) }}>MULAI</Button>
+                                )}{timeOn && (
+                                    <Button onClick={() => { setShow(!show); setMod(false) }}>Berhenti</Button>)}
+                            </div>
+                        </div>
+                        {!timeOn&&!mod&&<Step2 timee={time}/>}
+                    </Card.Body>
                 </Card>
                 <Draggable>
                     <div className="bg-light border ind boxcam rounded-3 d-flex align-items-center">
-                        <Webcam  className="cam" onUserMediaError={err} />
+                        <Webcam className="cam" onUserMediaError={err} />
                     </div>
                 </Draggable>
             </Container>
+            <Modal
+        show={show}
+        onHide={show === false}
+        backdrop="static"
+        keyboard={false}
+      >
+        {
+          mod ? mulai : akhir
+        }
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow(!show)}>
+            Tidak
+          </Button>
+          <Button variant="primary" onClick={() => { setTimeOn(!timeOn); setShow(!show)}} >Iya</Button>
+        </Modal.Footer>
+      </Modal>
         </div>
     )
 };

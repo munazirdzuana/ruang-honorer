@@ -1,9 +1,26 @@
-import { useState } from "react"
+import { useState ,useEffect } from "react"
 import { Card, Container, InputGroup,Form, Button, Alert} from "react-bootstrap"
 import Formulir from "../componen/form/Formulir"
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getMe } from "../fiture/AuthSlice";
 
 
 const Cash=()=>{
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { isError, user } = useSelector((state) => state.auth);
+  
+    useEffect(() => {
+      dispatch(getMe());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (isError) {
+            navigate("/login");
+        }
+    }, [isError, navigate]);
+  
 
     const [alet,setAlet]=useState(false);
       
@@ -30,7 +47,7 @@ const Cash=()=>{
             <div className=" border border-primary bg-primary rounded-2 m-2">
                 <div className="fs-5 text-light text-center">SALDO</div>
                 <div className="fs-5 border rounded-2 m-1 bg-light">
-                    <div className="d-flex justify-content-between">RP<span>10.000</span></div>
+                    <div className="d-flex justify-content-between">RP<span>{user && user.saldo}</span></div>
                 </div>
             </div>
             {nomina}

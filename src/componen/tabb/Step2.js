@@ -1,107 +1,112 @@
-import React from "react";
-import { Form, Button, Modal } from "react-bootstrap";
-import Formulir from "../form/Formulir";
+import React, { useEffect } from "react";
+import { Form, Button, Col, Row } from "react-bootstrap";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+ 
 
-const Step2=(props)=>{
-    const [time, setTime]=React.useState(0);
-    const [timeOn, setTimeOn]=React.useState(false);
-    const [show, setShow] = React.useState(false);
-    const [mod,setMod]=React.useState(true);
-    
+const Step2 = (props) => {
 
-    const mulai=<>
-        <Modal.Header closeButton>
-            <Modal.Title>Mulai ?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Pastikan semuanya sudah siap.
-        </Modal.Body>
-    </>
+  const [tanggal, setTanggal]=useState("")
+  const [nPel, setnPel]=useState("")
+  const [peserta, setPeserta]=useState(0)
+  const [obj, setObj]=useState("")
+  const [time, setTime]=useState(0)
+  const navigate = useNavigate("");
+  const {user } = useSelector((state) => state.auth);
+  const [msg, setMsg] = useState("");
 
-    const akhir=<>
-    <Modal.Header closeButton>
-          <Modal.Title>akhiri?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Akhiri pembelajaran sekarang
-        </Modal.Body>
-    </>
+  let datee = new Date();
+  let mont = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+  let playDate = datee.getDate() + '-' + mont[datee.getMonth()] + '-' + datee.getFullYear();
 
-    React.useEffect(()=>{
-        let interval =null;
+  useEffect(()=>{
+    setTime(props.timee)
+    setTanggal(playDate)
+  },[props.timee, playDate])
 
-        if (timeOn){
-            interval=setInterval(()=>{
-                setTime((prevTime)=>prevTime+10);
-            },10);
-        }else if (!timeOn) {
-            clearInterval(interval);
+  const addKelas = async (e) => {
+    e.preventDefault();
+    try {
+        await axios.post("http://localhost:5000/products", {
+            nPel: nPel,
+            peserta: peserta,
+            objp: obj,
+            tgl: tanggal,
+            time: time
+        });
+        navigate(`/profil/${user.uuid}`);
+    } catch (error) {
+        if (error.response) {
+            setMsg(error.response.data.msg);
         }
-        return () => clearInterval(interval);
-    },[timeOn]);
-
-    function kirimP(e){
-      props.callback(e);
     }
-
-    return(
-        <div>
-            <div className="Timers">
-            <h1>Stopwatch</h1>
-            <div id="display" className="badge bg-danger text-wrap fs-3">
-                <span >{("0" + Math.floor((time / 60000) % 60)).slice(-2)}:</span>
-                <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}:</span>
-                <span>{("0" + ((time / 10) % 100)).slice(-2)}</span>
-            </div>
-            <div>
-                {!timeOn && time === 0 && (
-                <Button onClick={()=> {setShow(!show); setMod(true) }}>MULAI</Button>
-                )}{timeOn &&(
-                <Button onClick={() => {setShow(!show); setMod(false)}}>Berhenti</Button>)}
-            </div>
-
-      {/* <div id="buttons">
-        {!timeOn && time === 0 && (
-          <button onClick={() => setTimeOn(true)}>Start</button>
-        )}
-        {timeOn && <button onClick={() => setTimeOn(false)}>
-            Stop
-            </button>}
-        {!timeOn && time > 0 && (
-          <button onClick={() => setTime(0)}>Reset</button>
-        )}
-        {!timeOn && time > 0 && (
-          <button onClick={() => setTimeOn(true)}>Resume</button>
-        )}
-      </div> */}
-    </div>
-    <hr/>
+};
+  
+  return (
     <div>
-        {!timeOn&&!mod&&<Form>
-        <Formulir title="point Waktu" tipe="number" value={time} diss={true}/>
-        <Formulir title="Pencapaian Pembelajaran" tipe="file" Text="Dapat berupa vidio/foto/pdf dari pencapaian kali ini"/>
+      <hr />
+      <Form onSubmit={addKelas}>
+        {console.log(msg)}
+        {console.log(nPel)}
+        {console.log(peserta)}
+        {console.log(obj)}
+        {console.log(tanggal)}
+        {console.log(time)}
+        <Row>
+          <Col>
+            <Form.Group className="mb-3" controlId="nik" >
+              <Form.Label>Tanggal</Form.Label>
+              <Form.Control type="text" value={playDate} plaintext={true}
+              />
+            </Form.Group>
+          </Col>
+          {/* <Formulir title="Nama Pelajaran" id="nm-pel" tipe="text" /> */}
+          <Form.Group className="mb-3" controlId="nik" >
+            <Form.Label>Nama Pelajaran</Form.Label>
+            <Form.Control type="text"
+            onChange={(e) => setnPel(e.target.value)}
+            />
+          </Form.Group>
+          <Col>
+            {/* <Formulir title="Jumlah siswa" id="jlh-siswa" tipe="number" /> */}
+            <Form.Group className="mb-3" controlId="nik" >
+              <Form.Label>Jumlah siswa</Form.Label>
+              <Form.Control type="number"
+              onChange={(e) => setPeserta(parseInt(e.target.value))}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            {/* <Formulir title="Objek pencapaian" id="nm-pel" tipe="text" /> */}
+            <Form.Group className="mb-3" controlId="nik" >
+              <Form.Label>Objek pencapaian</Form.Label>
+              <Form.Control type="text"
+              onChange={(e) => setObj(e.target.value)} 
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        {/* <div>
+        {!timeOn && !mod &&  */}
+        <Form.Group className="mb-3" controlId="nik" >
+          <Form.Label>Point waktu</Form.Label>
+          <Form.Control type="text" value={props.timee} plaintext={true} 
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="nik" >
+          <Form.Label>Pencapaian Pembelajaran</Form.Label>
+          <Form.Control type="file"
+          // onChange={(e) => setNik(e.target.value)} 
+          />
+          <Form.Text className="text-muted">
+            Dapat berupa vidio/foto/pdf dari pencapaian kali ini
+          </Form.Text>
+        </Form.Group>
         <Button type="submit" >Submit</Button>
-        </Form>}
+      </Form>
     </div>
-
-    <Modal
-        show={show}
-        onHide={show===false}
-        backdrop="static"
-        keyboard={false}
-      >
-        {
-            mod?mulai:akhir
-        }
-        
-        <Modal.Footer>
-          <Button variant="secondary" onClick={()=>setShow(!show)}>
-            Tidak
-          </Button>
-          <Button variant="primary" onClick={() => {setTimeOn(!timeOn); setShow(!show); kirimP(true)}} >Iya</Button>
-        </Modal.Footer>
-      </Modal>
-        </div>
-    )
+  )
 }
 export default Step2;

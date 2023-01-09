@@ -1,9 +1,11 @@
 import React from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import NavigationBar from "../componen/Navbarr/NavigationBar";
-import hero from "../asset/hero.svg"
+import hero from "../asset/hero.svg";
+import { useSelector } from "react-redux";
 
 const Home = () =>{
+    const {isError} = useSelector((state) => state.auth);
     return (
     <div>
         <div className="bg pt-5" > 
@@ -23,7 +25,7 @@ const Home = () =>{
                             Setiap Rumah menjadi Sekolah"</div>
                             <div className="fs-6 text-light">- KI Hajar Dewantara -</div>
                             <div className="fs-4 text-light mb-2">Dapatkan upah tambahan sekarang juga</div>
-                            <Button href="/singup"> DAFTAR Sekarang</Button>
+                            <Button hidden={!isError} href="/singup"> DAFTAR Sekarang</Button>
                             </Row>
                         </Col>
                         <Col md className="d-flex justify-content-center">
