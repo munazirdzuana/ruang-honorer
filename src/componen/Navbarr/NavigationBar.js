@@ -51,7 +51,7 @@ const NavigationBar = ({ page }) => {
             <NavDropdown title={user && user.name} id="collasible-nav-dropdown" className="m-auto">
                 <NavDropdown.Item href="/">Home</NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
+                <NavDropdown.Item onClick={logout}>Logoute</NavDropdown.Item>
             </NavDropdown>
         </Nav>
     }
